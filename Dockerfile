@@ -1,23 +1,35 @@
-# Use Node.js as a parent image
-FROM node:18-alpine
+# Use lightweight Node.js 18 (Alpine version)
+FROM node:18-alpine AS build
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
+# Copy package.json and package-lock.json first (for better caching)
+COPY package*.json ./
 
-# Copy the rest of the app
+# Install dependencies with a clean cache
+RUN npm ci --omit=dev
+
+# Copy the rest of the application files
 COPY . .
 
 # Build the React app
 RUN npm run build
 
-# Expose port 80 for serving the frontend
-EXPOSE 3000
+# Use a lightweight web server (Nginx) to serve the built app
+FROM nginx:alpine
 
-# Install serve and start the application
-RUN npm install -g serve
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Set the working directory inside the container
+WORKDIR /usr/share/nginx/html
 
+# Remove default Nginx static files
+RUN rm -rf ./*
+
+# Copy the built React app from the previous stage
+COPY --from=build /app/build .
+
+# Expose port 80 for web traffic
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
