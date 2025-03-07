@@ -1,5 +1,5 @@
 # Use lightweight Node.js 18 (Alpine version)
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 # Set the working directory
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN npm ci --omit=dev
 # Copy the rest of the application files
 COPY . .
 
-# Build the React app
+# Build the React ap
 RUN npm run build
 
 # Use a lightweight web server (Nginx) to serve the built app
