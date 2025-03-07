@@ -25,4 +25,6 @@ mysqlx-bind-address	= 127.0.0.1
 7. granting like this 
 GRANT ALL PRIVILEGES ON kartik_database.* TO 'kartikuser'@'%' IDENTIFIED BY 'your_password';
 FLUSH PRIVILEGES;
-8. 
+8. i have added "cryptography" in requiremets.txt it is necessary for container application connection with mysql database in local vm 
+
+cryptography + requirements.txt + conatainer connection with mysql
